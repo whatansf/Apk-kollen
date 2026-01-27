@@ -4,8 +4,10 @@
 <meta charset="UTF-8">
 <title>APK‑kollen – Systembolaget</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+<!-- Google AdSense -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4296884380555879"
      crossorigin="anonymous"></script>
+
 <style>
 :root {
   --bg: #f3f4f6;
@@ -30,7 +32,7 @@ h1{text-align:center; font-size:1.8rem; margin-bottom:0.3rem; letter-spacing:1px
 .legend{text-align:center;font-size:0.85rem;margin-bottom:1rem;color:var(--muted);}
 .legend span{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle;}
 .controls{display:flex;flex-wrap:wrap;gap:0.5rem;justify-content:center;margin-bottom:1rem;}
-input,select,button{padding:0.4rem 0.6rem;font-size:0.85rem;border-radius:6px;border:1px solid var(--border);background:#fff;color:var(--text);transition:all 0.2s;}
+input,button{padding:0.4rem 0.6rem;font-size:0.85rem;border-radius:6px;border:1px solid var(--border);background:#fff;color:var(--text);transition:all 0.2s;}
 input::placeholder{color:#9ca3af;}
 button{cursor:pointer;}
 button:hover:not(:disabled){border-color:var(--accent); color:var(--accent);}
@@ -60,16 +62,11 @@ button:disabled{opacity:0.5; cursor:not-allowed;}
 }
 .product-info{display:flex; flex-direction:column; gap:0.2rem;}
 .apk-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle;}
-.fav{cursor:pointer;color:#9ca3af;margin-left:0.5rem;transition:color 0.2s;}
-.fav.active{color:#ef4444;}
 .link a{color:var(--accent); text-decoration:none;}
 .link a:hover{text-decoration:underline;}
-.pagination{margin-top:1rem;display:flex;justify-content:center;gap:0.5rem;font-size:0.85rem;}
-.pagination button{padding:0.4rem 0.6rem;}
 @media (max-width: 500px){
   .controls{flex-direction:column; gap:0.4rem;}
   .product-item{flex-direction:column; align-items:flex-start; gap:0.3rem;}
-  .pagination{flex-direction:column; gap:0.3rem;}
 }
 </style>
 </head>
@@ -86,7 +83,7 @@ button:disabled{opacity:0.5; cursor:not-allowed;}
 <div class="product-list" id="productList"></div>
 
 <script>
-// Lokala produkter som alltid visas
+// Lokala produkter som alltid syns
 const products=[
   {id:1,name:"Absolut Vodka",type:"Spritsort",price:199,abv:40,volume:0.7},
   {id:2,name:"Norrlands Guld",type:"Öl",price:25,abv:5,volume:0.5},
@@ -96,10 +93,11 @@ const products=[
 ];
 
 let filtered=[...products];
-const favorites=new Set();
 
+// Beräkna APK
 function calculateAPK(d){ return (d.abv*d.volume)/d.price; }
 
+// Skapa HTML för varje produkt
 function createItemHTML(d){
   const apk=calculateAPK(d);
   let color=apk>0.1?'--high-apk':(apk>0.05?'--med-apk':'--low-apk');
@@ -112,25 +110,30 @@ function createItemHTML(d){
   </div>`;
 }
 
+// Rendera sidan
 function renderPage(){
-  const list=document.getElementById("productList");
-  list.innerHTML="";
+  const list = document.getElementById("productList");
+  list.innerHTML = "";
   filtered.sort((a,b)=>calculateAPK(b)-calculateAPK(a)); // bästa först
+  
   filtered.forEach(d=>{
-    const div=document.createElement("div");
-    div.innerHTML=createItemHTML(d);
-    div.firstChild.classList.add("product-item");
-    list.appendChild(div.firstChild);
-    setTimeout(()=>div.firstChild.classList.add("show"),50);
+    const item = document.createElement("div");
+    item.innerHTML = createItemHTML(d);
+    // Lägg till direkt
+    list.appendChild(item.firstChild);
+    // Fade-in
+    setTimeout(()=>item.firstChild.classList.add("show"),50);
   });
 }
 
+// Sök
 function applySearch(){
   const q=document.getElementById("search").value.toLowerCase();
-  filtered=products.filter(d=>d.name.toLowerCase().includes(q));
+  filtered = products.filter(d=>d.name.toLowerCase().includes(q));
   renderPage();
 }
 
+// Återställ
 function resetFilters(){
   document.getElementById("search").value="";
   filtered=[...products];
@@ -139,7 +142,7 @@ function resetFilters(){
 
 document.getElementById("search").addEventListener("input",applySearch);
 
-// Rendera sidan direkt
+// Visa direkt
 renderPage();
 </script>
 </body>
