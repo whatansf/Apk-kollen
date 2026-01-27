@@ -1,249 +1,215 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-  <meta charset="UTF-8">
-  <title>APK‑kollen – Systembolaget</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <style>
-    :root {
-      --bg: #f5f7fa;
-      --card: #ffffff;
-      --muted: #6b7280;
-      --accent: #22c55e;
-      --border: #d1d5db;
-      --text: #111827;
-      --badge-bg: #e5e7eb;
-      --high-apk: #22c55e;
-      --med-apk: #facc15;
-      --low-apk: #ef4444;
-    }
-    body {
-      margin: 0;
-      padding: 1rem;
-      background: var(--bg);
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
-      color: var(--text);
-    }
-    h1 {
-      text-align: center;
-      font-size: 1.8rem;
-      margin-bottom: 0.3rem;
-      letter-spacing: 1px;
-    }
-    .small {
-      text-align: center;
-      color: var(--muted);
-      margin-bottom: 0.5rem;
-      font-size: 0.9rem;
-    }
-    .legend {
-      text-align: center;
-      font-size: 0.85rem;
-      margin-bottom: 1rem;
-      color: var(--muted);
-    }
-    .legend span { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 4px; vertical-align: middle; }
+<meta charset="UTF-8">
+<title>APK‑kollen – Systembolaget</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+:root {
+  --bg: #f5f7fa;
+  --card: #ffffff;
+  --muted: #6b7280;
+  --accent: #22c55e;
+  --border: #d1d5db;
+  --text: #111827;
+  --high-apk: #22c55e;
+  --med-apk: #facc15;
+  --low-apk: #ef4444;
+}
+body {
+  margin:0; padding:1rem;
+  background:var(--bg);
+  font-family:system-ui, sans-serif;
+  color:var(--text);
+}
+h1{text-align:center; font-size:1.8rem; margin-bottom:0.3rem; letter-spacing:1px;}
+.small{text-align:center;color:var(--muted); margin-bottom:0.5rem; font-size:0.9rem;}
+.legend{text-align:center;font-size:0.85rem;margin-bottom:1rem;color:var(--muted);}
+.legend span{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle;}
+.controls{display:flex;flex-wrap:wrap;gap:0.5rem;justify-content:center;margin-bottom:1rem;}
+input,select,button{padding:0.4rem 0.6rem;font-size:0.85rem;border-radius:6px;border:1px solid var(--border);background:#fff;color:var(--text);transition:all 0.2s;}
+input::placeholder{color:#9ca3af;}
+button{cursor:pointer;}
+button:hover:not(:disabled){border-color:var(--accent); color:var(--accent);}
+button:disabled{opacity:0.5; cursor:not-allowed;}
+.main-grid{display:grid; grid-template-columns:1fr 3fr 1fr; gap:1rem;}
+.ads{display:flex; flex-direction:column; gap:1rem;}
+.ad-box{background:#e5e7eb;border:1px solid #d1d5db;border-radius:8px;padding:1rem;text-align:center;font-weight:bold;color:var(--text);transition:transform 0.2s, box-shadow 0.2s;}
+.ad-box:hover{transform:translateY(-3px); box-shadow:0 6px 15px rgba(0,0,0,0.2);}
+.product-list{display:flex; flex-direction:column; gap:0.5rem;}
+.product-item{border-radius:8px;padding:0.5rem 0.7rem;display:flex;justify-content:space-between;align-items:center;font-size:0.9rem;transition:transform 0.15s,box-shadow 0.15s; border:1px solid var(--border);}
+.product-item:hover{transform:translateY(-2px); box-shadow:0 4px 12px rgba(0,0,0,0.1);}
+.product-info{display:flex; flex-direction:column; gap:0.2rem;}
+.apk-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle;}
+.fav{cursor:pointer;color:#9ca3af;margin-left:0.5rem;transition:color 0.2s;}
+.fav.active{color:#ef4444;}
+.link a{color:var(--accent); text-decoration:none;}
+.link a:hover{text-decoration:underline;}
+.pagination{margin-top:1rem;display:flex;justify-content:center;gap:0.5rem;font-size:0.85rem;}
+.pagination button{padding:0.4rem 0.6rem;}
 
-    /* Controls */
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      justify-content: center;
-      margin-bottom: 1rem;
-    }
-    input, select, button {
-      padding: 0.4rem 0.6rem;
-      font-size: 0.85rem;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: #fff;
-      color: var(--text);
-      transition: all 0.2s ease;
-    }
-    input::placeholder { color: #9ca3af; }
-    button { cursor: pointer; }
-    button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
-    button:disabled { opacity: 0.5; cursor: not-allowed; }
-
-    /* Layout */
-    .main-grid {
-      display: grid;
-      grid-template-columns: 1fr 3fr 1fr;
-      gap: 1rem;
-    }
-    .ads {
-      display: flex;
-      flex-direction: column;
-      gap: 1rem;
-    }
-    .ad-box {
-      background: #e5e7eb;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      padding: 1rem;
-      text-align: center;
-      font-weight: bold;
-      color: var(--text);
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-    }
-    .ad-box:hover { transform: translateY(-3px); box-shadow: 0 6px 15px rgba(0,0,0,0.2); }
-
-    /* Product list */
-    .product-list {
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-    }
-    .product-item {
-      border-radius: 8px;
-      padding: 0.5rem 0.7rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      font-size: 0.9rem;
-      transition: transform 0.15s ease, box-shadow 0.15s ease;
-      border: 1px solid var(--border);
-    }
-    .product-item:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-    .product-info { display: flex; flex-direction: column; gap: 0.2rem; }
-    .badge { border-radius: 4px; padding: 0.1rem 0.3rem; font-size: 0.75rem; color: var(--text); display: inline-block; }
-
-    .apk-dot { display: inline-block; width: 10px; height: 10px; border-radius: 50%; margin-right: 5px; vertical-align: middle; }
-
-    .fav { cursor: pointer; color: #9ca3af; margin-left: 0.5rem; transition: color 0.2s; }
-    .fav.active { color: #ef4444; }
-    .link a { color: var(--accent); text-decoration: none; }
-    .link a:hover { text-decoration: underline; }
-
-    /* Pagination */
-    .pagination {
-      margin-top: 1rem;
-      display: flex;
-      justify-content: center;
-      gap: 0.5rem;
-      font-size: 0.85rem;
-    }
-    .pagination button { padding: 0.4rem 0.6rem; }
-  </style>
+/* ------------------- RESPONSIV ------------------- */
+@media (max-width: 900px){
+  .main-grid{grid-template-columns:1fr; gap:1rem;}
+  .ads{flex-direction:row; flex-wrap:wrap; justify-content:center;}
+  .ad-box{flex:1 1 45%; padding:0.6rem;}
+}
+@media (max-width: 500px){
+  .controls{flex-direction:column; gap:0.4rem;}
+  .ad-box{flex:1 1 100%; padding:0.5rem;}
+  .product-item{flex-direction:column; align-items:flex-start; gap:0.3rem;}
+  .pagination{flex-direction:column; gap:0.3rem;}
+}
+</style>
 </head>
 <body>
-  <h1>APK‑kollen</h1>
-  <div class="small">Mest alkohol per krona – Systembolagets sortiment</div>
-  <div class="legend">APK: <span style="background: var(--high-apk);"></span> Hög | <span style="background: var(--med-apk);"></span> Medium | <span style="background: var(--low-apk);"></span> Låg</div>
+<h1>APK‑kollen</h1>
+<div class="small">Mest alkohol per krona – Systembolagets sortiment</div>
+<div class="legend">APK: <span style="background: var(--high-apk);"></span> Hög | <span style="background: var(--med-apk);"></span> Medium | <span style="background: var(--low-apk);"></span> Låg</div>
 
-  <div class="controls">
-    <input type="text" id="search" placeholder="Sök namn...">
-    <select id="typeFilter"><option value="">Alla typer</option></select>
-    <input type="number" id="minPrice" placeholder="Min pris">
-    <input type="number" id="maxPrice" placeholder="Max pris">
-    <input type="number" id="minAbv" placeholder="Min %" step="0.1">
-    <select id="topMode">
-      <option value="all">Alla</option>
-      <option value="favorites">Favoriter</option>
-    </select>
-    <button onclick="resetFilters()">Återställ</button>
-  </div>
+<div class="controls">
+<input type="text" id="search" placeholder="Sök namn...">
+<select id="typeFilter"><option value="">Alla typer</option></select>
+<input type="number" id="minPrice" placeholder="Min pris">
+<input type="number" id="maxPrice" placeholder="Max pris">
+<input type="number" id="minAbv" placeholder="Min %" step="0.1">
+<button onclick="resetFilters()">Återställ</button>
+</div>
 
-  <div class="main-grid">
-    <div class="ads">
-      <div class="ad-box">Annonsplats 1</div>
-      <div class="ad-box">Annonsplats 2</div>
+<div class="main-grid">
+  <div class="ads">
+    <div class="ad-box">
+      <!-- Google AdSense -->
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4296884380555879" crossorigin="anonymous"></script>
+      <ins class="adsbygoogle" style="display:block" data-ad-format="auto"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
-
-    <div class="product-list" id="productList"></div>
-
-    <div class="ads">
-      <div class="ad-box">Annonsplats 3</div>
-      <div class="ad-box">Annonsplats 4</div>
+    <div class="ad-box">
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4296884380555879" crossorigin="anonymous"></script>
+      <ins class="adsbygoogle" style="display:block" data-ad-format="auto"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
     </div>
   </div>
 
-  <div class="pagination">
-    <button id="prevBtn" onclick="prevPage()">⬅ Föregående</button>
-    <span id="pageInfo"></span>
-    <button id="nextBtn" onclick="nextPage()">Nästa ➡</button>
+  <div class="product-list" id="productList"></div>
+
+  <div class="ads">
+    <div class="ad-box">
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4296884380555879" crossorigin="anonymous"></script>
+      <ins class="adsbygoogle" style="display:block" data-ad-format="auto"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
+    <div class="ad-box">
+      <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4296884380555879" crossorigin="anonymous"></script>
+      <ins class="adsbygoogle" style="display:block" data-ad-format="auto"></ins>
+      <script>(adsbygoogle = window.adsbygoogle || []).push({});</script>
+    </div>
   </div>
+</div>
 
-  <script>
-    const DATA_URL = "https://susbolaget.emrik.org/v1/products";
-    let drinks = [], filtered = [], currentSort = { key: "apk", asc: false }, page = 1, pageSize = 20;
-    const favorites = new Set(JSON.parse(localStorage.getItem("favorites") || "[]"));
+<div class="pagination">
+<button id="prevBtn" onclick="prevPage()">⬅ Föregående</button>
+<span id="pageInfo"></span>
+<button id="nextBtn" onclick="nextPage()">Nästa ➡</button>
+</div>
 
-    function calculateAPK(d) { return (d.abv * d.volume) / d.price; }
-    function saveFavorites() { localStorage.setItem("favorites", JSON.stringify([...favorites])); }
-    function toggleFavorite(id) { if(favorites.has(id)) favorites.delete(id); else favorites.add(id); saveFavorites(); renderPage(); }
+<script>
+// -------------------- DATA & LOGIK --------------------
+const DATA_URL="https://susbolaget.emrik.org/v1/products";
+let drinks=[], filtered=[], page=1, pageSize=20;
+const favorites=new Set(JSON.parse(localStorage.getItem("favorites")||"[]"));
 
-    function createItemHTML(d){
-      const apk = calculateAPK(d);
-      let color = apk>0.1? '--high-apk' : (apk>0.05? '--med-apk' : '--low-apk');
-      return `<div class="product-item"><div class="product-info"><span><span class=\"apk-dot\" style=\"background: var(${color});\"></span>${d.name}</span><span class="badge">${d.type}</span><span>Pris: ${d.price.toFixed(2)} kr | ABV: ${d.abv}% | Volym: ${d.volume} l | APK: ${apk.toFixed(4)}</span></div><div><span class="fav ${favorites.has(d.id)?'active':''}" onclick="toggleFavorite('${d.id}')">★</span> <span class="link"><a href=\"https://www.systembolaget.se/produkt/${d.id}\" target=\"_blank\">Systembolaget</a></span></div></div>`;
-    }
+function calculateAPK(d){ return (d.abv*d.volume)/d.price; }
+function saveFavorites(){ localStorage.setItem("favorites",JSON.stringify([...favorites])); }
+function toggleFavorite(id){ if(favorites.has(id)) favorites.delete(id); else favorites.add(id); saveFavorites(); renderPage(); }
 
-    function renderPage(){
-      const list=document.getElementById("productList");
-      list.innerHTML="";
-      const start=(page-1)*pageSize;
-      const pageData=filtered.slice(start,start+pageSize);
-      pageData.forEach(d=>list.innerHTML+=createItemHTML(d));
-      const totalPages=Math.max(1,Math.ceil(filtered.length/pageSize));
-      document.getElementById("pageInfo").textContent=`Sida ${page} / ${totalPages} (${filtered.length} produkter)`;
-      document.getElementById("prevBtn").disabled=page<=1;
-      document.getElementById("nextBtn").disabled=page>=totalPages;
-    }
+function createItemHTML(d){
+  const apk=calculateAPK(d);
+  let color=apk>0.1?'--high-apk':(apk>0.05?'--med-apk':'--low-apk');
+  return `<div class="product-item">
+    <div class="product-info">
+      <span><span class="apk-dot" style="background: var(${color});"></span>${d.name}</span>
+      <span class="badge">${d.type}</span>
+      <span>Pris: ${d.price.toFixed(2)} kr | ABV: ${d.abv}% | Volym: ${d.volume} l | APK: ${apk.toFixed(4)}</span>
+    </div>
+    <div>
+      <span class="fav ${favorites.has(d.id)?'active':''}" onclick="toggleFavorite('${d.id}')">★</span>
+      <span class="link"><a href="https://www.systembolaget.se/produkt/${d.id}" target="_blank">Systembolaget</a></span>
+    </div>
+  </div>`;
+}
 
-    function sortBy(key){
-      if(currentSort.key===key) currentSort.asc=false; else currentSort={key,asc:false}; // alltid högsta först
-      filtered.sort((a,b)=>{
-        let va,vb;
-        if(key==='apk'){va=calculateAPK(a);vb=calculateAPK(b);} else if(key==='fav'){va=favorites.has(a.id)?1:0;vb=favorites.has(b.id)?1:0;} else{va=a[key];vb=b[key];}
-        return vb-va; // högsta först
-      }); page=1; renderPage();
-    }
+function renderPage(){
+  const list=document.getElementById("productList");
+  list.innerHTML="";
+  const start=(page-1)*pageSize;
+  const pageData=filtered.slice(start,start+pageSize);
+  pageData.forEach(d=>list.innerHTML+=createItemHTML(d));
+  const totalPages=Math.max(1,Math.ceil(filtered.length/pageSize));
+  document.getElementById("pageInfo").textContent=`Sida ${page} / ${totalPages} (${filtered.length} produkter)`;
+  document.getElementById("prevBtn").disabled=page<=1;
+  document.getElementById("nextBtn").disabled=page>=totalPages;
+}
 
-    function applyFilters(){
-      const q=document.getElementById("search").value.toLowerCase();
-      const type=document.getElementById("typeFilter").value;
-      const minPrice=parseFloat(document.getElementById("minPrice").value);
-      const maxPrice=parseFloat(document.getElementById("maxPrice").value);
-      const minAbv=parseFloat(document.getElementById("minAbv").value);
-      const mode=document.getElementById("topMode").value;
-      filtered=drinks.filter(d=>{if(q&&!d.name.toLowerCase().includes(q))return false;if(type&&d.type!==type)return false;if(!isNaN(minPrice)&&d.price<minPrice)return false;if(!isNaN(maxPrice)&&d.price>maxPrice)return false;if(!isNaN(minAbv)&&d.abv<minAbv)return false;if(mode==='favorites'&&!favorites.has(d.id))return false;return true;});
-      sortBy("apk");
-    }
+function applyFilters(){
+  const q=document.getElementById("search").value.toLowerCase();
+  const type=document.getElementById("typeFilter").value;
+  const minPrice=parseFloat(document.getElementById("minPrice").value);
+  const maxPrice=parseFloat(document.getElementById("maxPrice").value);
+  const minAbv=parseFloat(document.getElementById("minAbv").value);
+  filtered=drinks.filter(d=>{
+    if(q&&!d.name.toLowerCase().includes(q))return false;
+    if(type&&d.type!==type)return false;
+    if(!isNaN(minPrice)&&d.price<minPrice)return false;
+    if(!isNaN(maxPrice)&&d.price>maxPrice)return false;
+    if(!isNaN(minAbv)&&d.abv<minAbv)return false;
+    return true;
+  });
+  sortBy("apk");
+}
 
-    function resetFilters(){document.getElementById("search").value="";document.getElementById("typeFilter").value="";document.getElementById("minPrice").value="";document.getElementById("maxPrice").value="";document.getElementById("minAbv").value="";document.getElementById("topMode").value="all";applyFilters();}
-    function nextPage(){const totalPages=Math.ceil(filtered.length/pageSize);if(page<totalPages){page++;renderPage();}}
-    function prevPage(){if(page>1){page--;renderPage();}}
+function resetFilters(){document.getElementById("search").value="";document.getElementById("typeFilter").value="";document.getElementById("minPrice").value="";document.getElementById("maxPrice").value="";document.getElementById("minAbv").value="";applyFilters();}
+function nextPage(){const totalPages=Math.ceil(filtered.length/pageSize); if(page<totalPages){page++; renderPage();}}
+function prevPage(){if(page>1){page--; renderPage();}}
 
-    async function loadData(){
-      const res=await fetch(DATA_URL);
-      const data=await res.json();
-      const types=new Set();
-      drinks=data.map(d=>{
-        const price=parseFloat(d.price);
-        const abv=parseFloat(d.alcoholPercentage);
-        const volume=parseFloat(d.volume)/1000;
-        if(!price||!abv||!volume)return null;
-        const type=d.categoryLevel1||"Okänt";
-        types.add(type);
-        return {id:d.productId,name:d.productNameBold||d.productNameThin||"Okänt",type,price,abv,volume};
-      }).filter(Boolean);
-      const select=document.getElementById("typeFilter");
-      select.innerHTML='<option value="">Alla typer</option>';
-      [...types].sort().forEach(t=>{const opt=document.createElement("option");opt.value=t;opt.textContent=t;select.appendChild(opt);});
-      filtered=[...drinks];
-      sortBy("apk");
-    }
+function sortBy(key){
+  filtered.sort((a,b)=>{
+    let va,vb;
+    if(key==='apk'){va=calculateAPK(a);vb=calculateAPK(b);}
+    else{va=a[key];vb=b[key];}
+    return vb-va; // högsta först
+  });
+  page=1;
+  renderPage();
+}
 
-    document.getElementById("search").addEventListener("input",applyFilters);
-    document.getElementById("typeFilter").addEventListener("change",applyFilters);
-    document.getElementById("minPrice").addEventListener("input",applyFilters);
-    document.getElementById("maxPrice").addEventListener("input",applyFilters);
-    document.getElementById("minAbv").addEventListener("input",applyFilters);
-    document.getElementById("topMode").addEventListener("change",applyFilters);
+async function loadData(){
+  const res=await fetch(DATA_URL);
+  const data=await res.json();
+  const types=new Set();
+  drinks=data.map(d=>{
+    const price=parseFloat(d.price);
+    const abv=parseFloat(d.alcoholPercentage);
+    const volume=parseFloat(d.volume)/1000;
+    if(!price||!abv||!volume)return null;
+    const type=d.categoryLevel1||"Okänt";
+    types.add(type);
+    return {id:d.productId,name:d.productNameBold||d.productNameThin||"Okänt",type,price,abv,volume};
+  }).filter(Boolean);
+  const select=document.getElementById("typeFilter");
+  select.innerHTML='<option value="">Alla typer</option>';
+  [...types].sort().forEach(t=>{const opt=document.createElement("option"); opt.value=t; opt.textContent=t; select.appendChild(opt);});
+  filtered=[...drinks];
+  sortBy("apk");
+}
 
-    loadData();
-  </script>
+document.getElementById("search").addEventListener("input",applyFilters);
+document.getElementById("typeFilter").addEventListener("change",applyFilters);
+document.getElementById("minPrice").addEventListener("input",applyFilters);
+document.getElementById("maxPrice").addEventListener("input",applyFilters);
+document.getElementById("minAbv").addEventListener("input",applyFilters);
+
+loadData();
+</script>
 </body>
 </html>
