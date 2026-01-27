@@ -1,149 +1,334 @@
 <!DOCTYPE html>
 <html lang="sv">
 <head>
-<meta charset="UTF-8">
-<title>APK‑kollen – Systembolaget</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Google AdSense -->
-<script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4296884380555879"
-     crossorigin="anonymous"></script>
+  <meta charset="UTF-8">
+  <title>APK-kollen – Systembolaget</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<style>
-:root {
-  --bg: #f3f4f6;
-  --card: #ffffff;
-  --muted: #6b7280;
-  --accent: #22c55e;
-  --border: #d1d5db;
-  --text: #111827;
-  --high-apk: #22c55e;
-  --med-apk: #facc15;
-  --low-apk: #ef4444;
-  --shadow: rgba(0,0,0,0.05);
-}
-body {
-  margin:0; padding:1rem;
-  background:linear-gradient(to bottom, #f3f4f6 0%, #e0f2fe 100%);
-  font-family:system-ui, sans-serif;
-  color:var(--text);
-}
-h1{text-align:center; font-size:1.8rem; margin-bottom:0.3rem; letter-spacing:1px; color:#1e40af;}
-.small{text-align:center;color:var(--muted); margin-bottom:0.5rem; font-size:0.9rem;}
-.legend{text-align:center;font-size:0.85rem;margin-bottom:1rem;color:var(--muted);}
-.legend span{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle;}
-.controls{display:flex;flex-wrap:wrap;gap:0.5rem;justify-content:center;margin-bottom:1rem;}
-input,button{padding:0.4rem 0.6rem;font-size:0.85rem;border-radius:6px;border:1px solid var(--border);background:#fff;color:var(--text);transition:all 0.2s;}
-input::placeholder{color:#9ca3af;}
-button{cursor:pointer;}
-button:hover:not(:disabled){border-color:var(--accent); color:var(--accent);}
-button:disabled{opacity:0.5; cursor:not-allowed;}
-.product-list{display:flex; flex-direction:column; gap:0.5rem;}
-.product-item{
-  border-radius:12px;
-  padding:0.6rem 0.8rem;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  font-size:0.9rem;
-  transition:transform 0.2s, box-shadow 0.2s, opacity 0.5s;
-  border:1px solid var(--border);
-  background:var(--card);
-  box-shadow:0 2px 6px var(--shadow);
-  opacity:0;
-  transform: translateY(10px);
-}
-.product-item.show{
-  opacity:1;
-  transform: translateY(0);
-}
-.product-item:hover{
-  transform:translateY(-2px);
-  box-shadow:0 6px 12px var(--shadow);
-}
-.product-info{display:flex; flex-direction:column; gap:0.2rem;}
-.apk-dot{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:5px;vertical-align:middle;}
-.link a{color:var(--accent); text-decoration:none;}
-.link a:hover{text-decoration:underline;}
-@media (max-width: 500px){
-  .controls{flex-direction:column; gap:0.4rem;}
-  .product-item{flex-direction:column; align-items:flex-start; gap:0.3rem;}
-}
-</style>
+  <style>
+    /* =========================
+       THEME VARS
+    ========================== */
+    :root {
+      --bg: #0b0f14;
+      --card: #111827;
+      --muted: #9ca3af;
+      --accent: #22c55e;
+      --border: #1f2937;
+      --text: #e5e7eb;
+
+      --high-apk: #22c55e;
+      --med-apk: #facc15;
+      --low-apk: #ef4444;
+    }
+
+    body.light {
+      --bg: #f5f7fa;
+      --card: #ffffff;
+      --muted: #6b7280;
+      --accent: #22c55e;
+      --border: #d1d5db;
+      --text: #111827;
+    }
+
+    /* =========================
+       BASE
+    ========================== */
+    body {
+      margin: 0;
+      padding: 1rem;
+      background: var(--bg);
+      color: var(--text);
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+      transition: background .25s, color .25s;
+    }
+
+    h1 {
+      text-align: center;
+      margin-bottom: .2rem;
+      letter-spacing: 1px;
+    }
+
+    .small {
+      text-align: center;
+      color: var(--muted);
+      margin-bottom: .4rem;
+      font-size: .9rem;
+    }
+
+    .legend {
+      text-align: center;
+      font-size: .85rem;
+      color: var(--muted);
+      margin-bottom: 1rem;
+    }
+
+    .legend span {
+      display:inline-block;
+      width:10px;
+      height:10px;
+      border-radius:50%;
+      margin-right:4px;
+      vertical-align:middle;
+    }
+
+    /* =========================
+       CONTROLS
+    ========================== */
+    .controls {
+      display: flex;
+      flex-wrap: wrap;
+      gap: .5rem;
+      justify-content: center;
+      margin-bottom: 1rem;
+    }
+
+    input, select, button {
+      padding: .45rem .6rem;
+      font-size: .85rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--card);
+      color: var(--text);
+    }
+
+    button {
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    button:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    /* =========================
+       THEME TOGGLE
+    ========================== */
+    .theme-btn {
+      font-size: 1rem;
+      padding: .45rem .7rem;
+    }
+
+    /* =========================
+       PRODUCT LIST
+    ========================== */
+    .product-list {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: .5rem;
+    }
+
+    .product-item {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: .6rem .8rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: transform .15s, box-shadow .15s;
+    }
+
+    .product-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 18px rgba(0,0,0,.25);
+    }
+
+    .product-info {
+      display: flex;
+      flex-direction: column;
+      gap: .25rem;
+      font-size: .9rem;
+    }
+
+    .apk-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      display: inline-block;
+      margin-right: 6px;
+    }
+
+    .badge {
+      background: rgba(255,255,255,.08);
+      padding: .15rem .4rem;
+      border-radius: 4px;
+      font-size: .75rem;
+      width: fit-content;
+    }
+
+    .fav {
+      cursor: pointer;
+      color: #6b7280;
+      margin-right: .4rem;
+      font-size: 1.1rem;
+    }
+
+    .fav.active {
+      color: #ef4444;
+    }
+
+    .link a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    .link a:hover {
+      text-decoration: underline;
+    }
+
+    /* =========================
+       PAGINATION
+    ========================== */
+    .pagination {
+      margin-top: 1rem;
+      display: flex;
+      justify-content: center;
+      gap: .5rem;
+      font-size: .85rem;
+    }
+  </style>
 </head>
+
 <body>
-<h1>APK‑kollen</h1>
-<div class="small">Mest alkohol per krona – Systembolagets sortiment</div>
-<div class="legend">APK: <span style="background: var(--high-apk);"></span> Hög | <span style="background: var(--med-apk);"></span> Medium | <span style="background: var(--low-apk);"></span> Låg</div>
+  <h1>APK-kollen</h1>
+  <div class="small">Mest alkohol per krona – Systembolagets sortiment</div>
 
-<div class="controls">
-<input type="text" id="search" placeholder="Sök namn...">
-<button onclick="resetFilters()">Återställ</button>
-</div>
+  <div class="legend">
+    APK:
+    <span style="background:var(--high-apk)"></span> Hög
+    <span style="background:var(--med-apk)"></span> Medium
+    <span style="background:var(--low-apk)"></span> Låg
+  </div>
 
-<div class="product-list" id="productList"></div>
+  <div class="controls">
+    <input id="search" placeholder="Sök namn">
+    <select id="typeFilter"><option value="">Alla typer</option></select>
+    <input id="minPrice" type="number" placeholder="Min pris">
+    <input id="maxPrice" type="number" placeholder="Max pris">
+    <input id="minAbv" type="number" step="0.1" placeholder="Min %">
+
+    <select id="topMode">
+      <option value="all">Alla</option>
+      <option value="favorites">Favoriter</option>
+    </select>
+
+    <button onclick="resetFilters()">Återställ</button>
+    <button class="theme-btn" onclick="toggleTheme()">☀️</button>
+  </div>
+
+  <div class="product-list" id="productList"></div>
+
+  <div class="pagination">
+    <button onclick="prevPage()">⬅</button>
+    <span id="pageInfo"></span>
+    <button onclick="nextPage()">➡</button>
+  </div>
 
 <script>
-// Lokala produkter som alltid syns
-const products=[
-  {id:1,name:"Absolut Vodka",type:"Spritsort",price:199,abv:40,volume:0.7},
-  {id:2,name:"Norrlands Guld",type:"Öl",price:25,abv:5,volume:0.5},
-  {id:3,name:"Jack Daniels",type:"Spritsort",price:299,abv:40,volume:0.7},
-  {id:4,name:"Rosévin",type:"Vin",price:89,abv:12,volume:0.75},
-  {id:5,name:"Coca-Cola Vodka",type:"Mix",price:49,abv:12,volume:0.5}
-];
+/* =========================
+   THEME
+========================= */
+function toggleTheme(){
+  document.body.classList.toggle("light");
+  document.querySelector(".theme-btn").textContent =
+    document.body.classList.contains("light") ? "🌙" : "☀️";
+}
 
-let filtered=[...products];
+/* =========================
+   DATA
+========================= */
+const DATA_URL = "https://susbolaget.emrik.org/v1/products";
+let drinks=[], filtered=[], page=1, pageSize=20;
+const favorites = new Set(JSON.parse(localStorage.getItem("favorites")||"[]"));
 
-// Beräkna APK
-function calculateAPK(d){ return (d.abv*d.volume)/d.price; }
+const apk = d => (d.abv*d.volume)/d.price;
 
-// Skapa HTML för varje produkt
-function createItemHTML(d){
-  const apk=calculateAPK(d);
-  let color=apk>0.1?'--high-apk':(apk>0.05?'--med-apk':'--low-apk');
-  return `<div class="product-item">
+function toggleFavorite(id){
+  favorites.has(id)?favorites.delete(id):favorites.add(id);
+  localStorage.setItem("favorites",JSON.stringify([...favorites]));
+  render();
+}
+
+function itemHTML(d){
+  const a = apk(d);
+  const c = a>0.1?"--high-apk":a>0.05?"--med-apk":"--low-apk";
+  return `
+  <div class="product-item">
     <div class="product-info">
-      <span><span class="apk-dot" style="background: var(${color});"></span>${d.name}</span>
-      <span>Pris: ${d.price} kr | ABV: ${d.abv}% | Volym: ${d.volume} l | APK: ${apk.toFixed(4)}</span>
+      <span><span class="apk-dot" style="background:var(${c})"></span>${d.name}</span>
+      <span class="badge">${d.type}</span>
+      <span>${d.price} kr | ${d.abv}% | ${d.volume} l | APK ${a.toFixed(4)}</span>
     </div>
-    <div class="link"><a href="https://www.systembolaget.se/dryck/produkt/${d.id}" target="_blank" rel="noopener noreferrer">Systembolaget</a></div>
+    <div>
+      <span class="fav ${favorites.has(d.id)?"active":""}" onclick="toggleFavorite('${d.id}')">★</span>
+      <span class="link"><a href="https://www.systembolaget.se/produkt/${d.id}" target="_blank">Systembolaget</a></span>
+    </div>
   </div>`;
 }
 
-// Rendera sidan
-function renderPage(){
-  const list = document.getElementById("productList");
-  list.innerHTML = "";
-  filtered.sort((a,b)=>calculateAPK(b)-calculateAPK(a)); // bästa först
-  
-  filtered.forEach(d=>{
-    const item = document.createElement("div");
-    item.innerHTML = createItemHTML(d);
-    // Lägg till direkt
-    list.appendChild(item.firstChild);
-    // Fade-in
-    setTimeout(()=>item.firstChild.classList.add("show"),50);
-  });
+function render(){
+  const list=document.getElementById("productList");
+  list.innerHTML="";
+  const slice=filtered.slice((page-1)*pageSize,page*pageSize);
+  slice.forEach(d=>list.innerHTML+=itemHTML(d));
+  document.getElementById("pageInfo").textContent=
+    `Sida ${page} / ${Math.ceil(filtered.length/pageSize)} (${filtered.length})`;
 }
 
-// Sök
-function applySearch(){
-  const q=document.getElementById("search").value.toLowerCase();
-  filtered = products.filter(d=>d.name.toLowerCase().includes(q));
-  renderPage();
+function apply(){
+  const q=search.value.toLowerCase();
+  filtered=drinks.filter(d=>{
+    if(q && !d.name.toLowerCase().includes(q))return false;
+    if(typeFilter.value && d.type!==typeFilter.value)return false;
+    if(minPrice.value && d.price<minPrice.value)return false;
+    if(maxPrice.value && d.price>maxPrice.value)return false;
+    if(minAbv.value && d.abv<minAbv.value)return false;
+    if(topMode.value==="favorites" && !favorites.has(d.id))return false;
+    return true;
+  }).sort((a,b)=>apk(b)-apk(a));
+  page=1; render();
 }
 
-// Återställ
 function resetFilters(){
-  document.getElementById("search").value="";
-  filtered=[...products];
-  renderPage();
+  search.value=minPrice.value=maxPrice.value=minAbv.value="";
+  typeFilter.value=""; topMode.value="all"; apply();
 }
 
-document.getElementById("search").addEventListener("input",applySearch);
+function nextPage(){ if(page*pageSize<filtered.length){page++;render();}}
+function prevPage(){ if(page>1){page--;render();}}
 
-// Visa direkt
-renderPage();
+async function load(){
+  const res=await fetch(DATA_URL);
+  const data=await res.json();
+  const types=new Set();
+  drinks=data.map(d=>{
+    const p=parseFloat(d.price);
+    const a=parseFloat(d.alcoholPercentage);
+    const v=parseFloat(d.volume)/1000;
+    if(!p||!a||!v)return null;
+    const t=d.categoryLevel1||"Okänt";
+    types.add(t);
+    return {id:d.productId,name:d.productNameBold||d.productNameThin,type:t,price:p,abv:a,volume:v};
+  }).filter(Boolean);
+  typeFilter.innerHTML='<option value="">Alla typer</option>';
+  [...types].sort().forEach(t=>{
+    const o=document.createElement("option");
+    o.value=o.textContent=t;
+    typeFilter.appendChild(o);
+  });
+  filtered=[...drinks];
+  apply();
+}
+
+["search","typeFilter","minPrice","maxPrice","minAbv","topMode"]
+.forEach(id=>document.getElementById(id).addEventListener("input",apply));
+
+load();
 </script>
 </body>
 </html>
+
