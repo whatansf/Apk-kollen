@@ -4,7 +4,6 @@
 <meta charset="UTF-8">
 <title>APK‑kollen – Systembolaget</title>
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<!-- Google AdSense script -->
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4296884380555879"
      crossorigin="anonymous"></script>
 <style>
@@ -81,37 +80,25 @@ button:disabled{opacity:0.5; cursor:not-allowed;}
 
 <div class="controls">
 <input type="text" id="search" placeholder="Sök namn...">
-<select id="typeFilter"><option value="">Alla typer</option></select>
-<input type="number" id="minPrice" placeholder="Min pris">
-<input type="number" id="maxPrice" placeholder="Max pris">
-<input type="number" id="minAbv" placeholder="Min %" step="0.1">
 <button onclick="resetFilters()">Återställ</button>
 </div>
 
 <div class="product-list" id="productList"></div>
 
-<div class="pagination">
-<button id="prevBtn" onclick="prevPage()">⬅ Föregående</button>
-<span id="pageInfo"></span>
-<button id="nextBtn" onclick="nextPage()">Nästa ➡</button>
-</div>
-
 <script>
-const favorites=new Set(JSON.parse(localStorage.getItem("favorites")||"[]"));
-let drinks=[], filtered=[], page=1, pageSize=20;
-
-// Fallback-data om API inte funkar
-const LOCAL_DATA=[
+// Lokala produkter som alltid visas
+const products=[
   {id:1,name:"Absolut Vodka",type:"Spritsort",price:199,abv:40,volume:0.7},
   {id:2,name:"Norrlands Guld",type:"Öl",price:25,abv:5,volume:0.5},
-  {id:3,name:"Coca-Cola Vodka",type:"Mix",price:49,abv:12,volume:0.5},
-  {id:4,name:"Jack Daniels",type:"Spritsort",price:299,abv:40,volume:0.7},
-  {id:5,name:"Rosévin",type:"Vin",price:89,abv:12,volume:0.75}
+  {id:3,name:"Jack Daniels",type:"Spritsort",price:299,abv:40,volume:0.7},
+  {id:4,name:"Rosévin",type:"Vin",price:89,abv:12,volume:0.75},
+  {id:5,name:"Coca-Cola Vodka",type:"Mix",price:49,abv:12,volume:0.5}
 ];
 
+let filtered=[...products];
+const favorites=new Set();
+
 function calculateAPK(d){ return (d.abv*d.volume)/d.price; }
-function saveFavorites(){ localStorage.setItem("favorites",JSON.stringify([...favorites])); }
-function toggleFavorite(id){ if(favorites.has(id)) favorites.delete(id); else favorites.add(id); saveFavorites(); renderPage(); }
 
 function createItemHTML(d){
   const apk=calculateAPK(d);
@@ -119,97 +106,41 @@ function createItemHTML(d){
   return `<div class="product-item">
     <div class="product-info">
       <span><span class="apk-dot" style="background: var(${color});"></span>${d.name}</span>
-      <span class="badge">${d.type}</span>
-      <span>Pris: ${d.price.toFixed(2)} kr | ABV: ${d.abv}% | Volym: ${d.volume} l | APK: ${apk.toFixed(4)}</span>
+      <span>Pris: ${d.price} kr | ABV: ${d.abv}% | Volym: ${d.volume} l | APK: ${apk.toFixed(4)}</span>
     </div>
-    <div>
-      <span class="fav ${favorites.has(d.id)?'active':''}" onclick="toggleFavorite(${d.id})">★</span>
-      <span class="link"><a href="https://www.systembolaget.se/dryck/produkt/${d.id}" target="_blank" rel="noopener noreferrer">Systembolaget</a></span>
-    </div>
+    <div class="link"><a href="https://www.systembolaget.se/dryck/produkt/${d.id}" target="_blank" rel="noopener noreferrer">Systembolaget</a></div>
   </div>`;
 }
 
 function renderPage(){
   const list=document.getElementById("productList");
   list.innerHTML="";
-  const start=(page-1)*pageSize;
-  const pageData=filtered.slice(start,start+pageSize);
-  pageData.forEach(d=>{
+  filtered.sort((a,b)=>calculateAPK(b)-calculateAPK(a)); // bästa först
+  filtered.forEach(d=>{
     const div=document.createElement("div");
     div.innerHTML=createItemHTML(d);
     div.firstChild.classList.add("product-item");
     list.appendChild(div.firstChild);
-    setTimeout(()=>div.firstChild.classList.add("show"), 50);
+    setTimeout(()=>div.firstChild.classList.add("show"),50);
   });
-  const totalPages=Math.max(1,Math.ceil(filtered.length/pageSize));
-  document.getElementById("pageInfo").textContent=`Sida ${page} / ${totalPages} (${filtered.length} produkter)`;
-  document.getElementById("prevBtn").disabled=page<=1;
-  document.getElementById("nextBtn").disabled=page>=totalPages;
 }
 
-function applyFilters(){
+function applySearch(){
   const q=document.getElementById("search").value.toLowerCase();
-  const type=document.getElementById("typeFilter").value;
-  const minPrice=parseFloat(document.getElementById("minPrice").value);
-  const maxPrice=parseFloat(document.getElementById("maxPrice").value);
-  const minAbv=parseFloat(document.getElementById("minAbv").value);
-  filtered=drinks.filter(d=>{
-    if(q&&!d.name.toLowerCase().includes(q))return false;
-    if(type&&d.type!==type)return false;
-    if(!isNaN(minPrice)&&d.price<minPrice)return false;
-    if(!isNaN(maxPrice)&&d.price>maxPrice)return false;
-    if(!isNaN(minAbv)&&d.abv<minAbv)return false;
-    return true;
-  });
-  sortBy("apk");
-}
-
-function resetFilters(){document.getElementById("search").value="";document.getElementById("typeFilter").value="";document.getElementById("minPrice").value="";document.getElementById("maxPrice").value="";document.getElementById("minAbv").value="";applyFilters();}
-function nextPage(){const totalPages=Math.ceil(filtered.length/pageSize); if(page<totalPages){page++; renderPage();}}
-function prevPage(){if(page>1){page--; renderPage();}}
-
-function sortBy(key){
-  filtered.sort((a,b)=>{
-    let va,vb;
-    if(key==='apk'){va=calculateAPK(a);vb=calculateAPK(b);}
-    else{va=a[key];vb=b[key];}
-    return vb-va; // högsta först
-  });
-  page=1;
+  filtered=products.filter(d=>d.name.toLowerCase().includes(q));
   renderPage();
 }
 
-async function loadData(){
-  try{
-    const res=await fetch("https://susbolaget.emrik.org/v1/products");
-    const data=await res.json();
-    drinks=data.map(d=>{
-      const price=parseFloat(d.price);
-      const abv=parseFloat(d.alcoholPercentage);
-      const volume=parseFloat(d.volume)/1000;
-      if(!price||!abv||!volume)return null;
-      const type=d.categoryLevel1||"Okänt";
-      return {id:d.productId,name:d.productNameBold||d.productNameThin||"Okänt",type,price,abv,volume};
-    }).filter(Boolean);
-  }catch(e){
-    console.warn("API gick inte, använder fallback-data");
-    drinks=[...LOCAL_DATA];
-  }
-  const types=new Set(drinks.map(d=>d.type));
-  const select=document.getElementById("typeFilter");
-  select.innerHTML='<option value="">Alla typer</option>';
-  [...types].sort().forEach(t=>{const opt=document.createElement("option"); opt.value=t; opt.textContent=t; select.appendChild(opt);});
-  filtered=[...drinks];
-  sortBy("apk");
+function resetFilters(){
+  document.getElementById("search").value="";
+  filtered=[...products];
+  renderPage();
 }
 
-document.getElementById("search").addEventListener("input",applyFilters);
-document.getElementById("typeFilter").addEventListener("change",applyFilters);
-document.getElementById("minPrice").addEventListener("input",applyFilters);
-document.getElementById("maxPrice").addEventListener("input",applyFilters);
-document.getElementById("minAbv").addEventListener("input",applyFilters);
+document.getElementById("search").addEventListener("input",applySearch);
 
-loadData();
+// Rendera sidan direkt
+renderPage();
 </script>
 </body>
 </html>
