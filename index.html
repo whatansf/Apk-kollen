@@ -2,13 +2,11 @@
 <html lang="sv">
 <head>
   <meta charset="UTF-8">
-  <title>APK-kollen – Systembolaget</title>
+  <title>APK‑kollen – Mest alkohol per krona på Systembolaget</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Sök och jämför Systembolagets drycker efter alkohol per krona (APK). Filtrera på typ, pris, procent och spara favoriter. Enkel och mobilvänlig lista.">
 
   <style>
-    /* =========================
-       THEME VARS
-    ========================== */
     :root {
       --bg: #0b0f14;
       --card: #111827;
@@ -16,7 +14,6 @@
       --accent: #22c55e;
       --border: #1f2937;
       --text: #e5e7eb;
-
       --high-apk: #22c55e;
       --med-apk: #facc15;
       --low-apk: #ef4444;
@@ -31,174 +28,44 @@
       --text: #111827;
     }
 
-    /* =========================
-       BASE
-    ========================== */
     body {
-      margin: 0;
-      padding: 1rem;
+      margin:0;
+      padding:1rem;
       background: var(--bg);
       color: var(--text);
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
       transition: background .25s, color .25s;
     }
 
-    h1 {
-      text-align: center;
-      margin-bottom: .2rem;
-      letter-spacing: 1px;
-    }
+    h1{text-align:center;margin-bottom:.2rem;letter-spacing:1px;}
+    .small{text-align:center;color:var(--muted);margin-bottom:.4rem;font-size:.9rem;}
+    .legend{text-align:center;font-size:.85rem;color:var(--muted);margin-bottom:1rem;}
+    .legend span{display:inline-block;width:10px;height:10px;border-radius:50%;margin-right:4px;vertical-align:middle;}
 
-    .small {
-      text-align: center;
-      color: var(--muted);
-      margin-bottom: .4rem;
-      font-size: .9rem;
-    }
+    .controls{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center;margin-bottom:1rem;}
+    input, select, button{padding:.45rem .6rem;font-size:.85rem;border-radius:6px;border:1px solid var(--border);background:var(--card);color:var(--text);}
+    button{cursor:pointer;transition:all .2s;}
+    button:hover{border-color:var(--accent);color:var(--accent);}
+    .theme-btn{font-size:1rem;padding:.45rem .7rem;transition: transform .2s ease;}
+    .theme-btn:hover{transform: rotate(15deg) scale(1.1);}
 
-    .legend {
-      text-align: center;
-      font-size: .85rem;
-      color: var(--muted);
-      margin-bottom: 1rem;
-    }
-
-    .legend span {
-      display:inline-block;
-      width:10px;
-      height:10px;
-      border-radius:50%;
-      margin-right:4px;
-      vertical-align:middle;
-    }
-
-    /* =========================
-       CONTROLS
-    ========================== */
-    .controls {
-      display: flex;
-      flex-wrap: wrap;
-      gap: .5rem;
-      justify-content: center;
-      margin-bottom: 1rem;
-    }
-
-    input, select, button {
-      padding: .45rem .6rem;
-      font-size: .85rem;
-      border-radius: 6px;
-      border: 1px solid var(--border);
-      background: var(--card);
-      color: var(--text);
-    }
-
-    button {
-      cursor: pointer;
-      transition: all .2s;
-    }
-
-    button:hover {
-      border-color: var(--accent);
-      color: var(--accent);
-    }
-
-    /* =========================
-       THEME TOGGLE
-    ========================== */
-    .theme-btn {
-      font-size: 1rem;
-      padding: .45rem .7rem;
-    }
-
-    /* =========================
-       PRODUCT LIST
-    ========================== */
-    .product-list {
-      max-width: 1100px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: .5rem;
-    }
-
-    .product-item {
-      background: var(--card);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: .6rem .8rem;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      transition: transform .15s, box-shadow .15s;
-    }
-
-    .product-item:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 18px rgba(0,0,0,.25);
-    }
-
-    .product-info {
-      display: flex;
-      flex-direction: column;
-      gap: .25rem;
-      font-size: .9rem;
-    }
-
-    .apk-dot {
-      width: 10px;
-      height: 10px;
-      border-radius: 50%;
-      display: inline-block;
-      margin-right: 6px;
-    }
-
-    .badge {
-      background: rgba(255,255,255,.08);
-      padding: .15rem .4rem;
-      border-radius: 4px;
-      font-size: .75rem;
-      width: fit-content;
-    }
-
-    .fav {
-      cursor: pointer;
-      color: #6b7280;
-      margin-right: .4rem;
-      font-size: 1.1rem;
-    }
-
-    .fav.active {
-      color: #ef4444;
-    }
-
-    .link a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-
-    .link a:hover {
-      text-decoration: underline;
-    }
-
-    /* =========================
-       PAGINATION
-    ========================== */
-    .pagination {
-      margin-top: 1rem;
-      display: flex;
-      justify-content: center;
-      gap: .5rem;
-      font-size: .85rem;
-    }
+    .product-list{max-width:1100px;margin:0 auto;display:flex;flex-direction:column;gap:.5rem;}
+    .product-item{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:.6rem .8rem;display:flex;justify-content:space-between;align-items:center;transition: transform .15s, box-shadow .15s;}
+    .product-item:hover{transform:translateY(-2px);box-shadow:0 8px 18px rgba(0,0,0,.25);}
+    .product-info{display:flex;flex-direction:column;gap:.25rem;font-size:.9rem;}
+    .apk-dot{width:10px;height:10px;border-radius:50%;display:inline-block;margin-right:6px;}
+    .badge{background:rgba(255,255,255,.08);padding:.15rem .4rem;border-radius:4px;font-size:.75rem;width:fit-content;}
+    .fav{cursor:pointer;color:#6b7280;margin-right:.4rem;font-size:1.1rem;}
+    .fav.active{color:#ef4444;}
+    .link a{color:var(--accent);text-decoration:none;}
+    .link a:hover{text-decoration:underline;}
+    .pagination{margin-top:1rem;display:flex;justify-content:center;gap:.5rem;font-size:.85rem;}
   </style>
 </head>
-
 <body>
-  <h1>APK-kollen</h1>
+  <h1>APK‑kollen</h1>
   <div class="small">Mest alkohol per krona – Systembolagets sortiment</div>
-
-  <div class="legend">
-    APK:
+  <div class="legend">APK:
     <span style="background:var(--high-apk)"></span> Hög
     <span style="background:var(--med-apk)"></span> Medium
     <span style="background:var(--low-apk)"></span> Låg
@@ -210,12 +77,10 @@
     <input id="minPrice" type="number" placeholder="Min pris">
     <input id="maxPrice" type="number" placeholder="Max pris">
     <input id="minAbv" type="number" step="0.1" placeholder="Min %">
-
     <select id="topMode">
       <option value="all">Alla</option>
       <option value="favorites">Favoriter</option>
     </select>
-
     <button onclick="resetFilters()">Återställ</button>
     <button class="theme-btn" onclick="toggleTheme()">☀️</button>
   </div>
@@ -229,23 +94,26 @@
   </div>
 
 <script>
-/* =========================
-   THEME
-========================= */
+/* ========================= THEME ========================== */
+if(localStorage.getItem("dark")===null){
+  document.body.classList.add("dark");
+  localStorage.setItem("dark","true");
+}else if(localStorage.getItem("dark")==="true"){
+  document.body.classList.add("dark");
+}
+
 function toggleTheme(){
   document.body.classList.toggle("light");
   document.querySelector(".theme-btn").textContent =
     document.body.classList.contains("light") ? "🌙" : "☀️";
 }
 
-/* =========================
-   DATA
-========================= */
-const DATA_URL = "https://susbolaget.emrik.org/v1/products";
+/* ========================= DATA ========================== */
+const DATA_URL="https://susbolaget.emrik.org/v1/products";
 let drinks=[], filtered=[], page=1, pageSize=20;
 const favorites = new Set(JSON.parse(localStorage.getItem("favorites")||"[]"));
 
-const apk = d => (d.abv*d.volume)/d.price;
+const apk=d=> (d.abv*d.volume)/d.price;
 
 function toggleFavorite(id){
   favorites.has(id)?favorites.delete(id):favorites.add(id);
@@ -254,10 +122,9 @@ function toggleFavorite(id){
 }
 
 function itemHTML(d){
-  const a = apk(d);
-  const c = a>0.1?"--high-apk":a>0.05?"--med-apk":"--low-apk";
-  return `
-  <div class="product-item">
+  const a=apk(d);
+  const c=a>0.1?"--high-apk":a>0.05?"--med-apk":"--low-apk";
+  return `<div class="product-item">
     <div class="product-info">
       <span><span class="apk-dot" style="background:var(${c})"></span>${d.name}</span>
       <span class="badge">${d.type}</span>
@@ -331,4 +198,3 @@ load();
 </script>
 </body>
 </html>
-
