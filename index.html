@@ -67,8 +67,6 @@ button:disabled{opacity:0.5; cursor:not-allowed;}
 .link a:hover{text-decoration:underline;}
 .pagination{margin-top:1rem;display:flex;justify-content:center;gap:0.5rem;font-size:0.85rem;}
 .pagination button{padding:0.4rem 0.6rem;}
-
-/* ------------------- RESPONSIV ------------------- */
 @media (max-width: 500px){
   .controls{flex-direction:column; gap:0.4rem;}
   .product-item{flex-direction:column; align-items:flex-start; gap:0.3rem;}
@@ -99,9 +97,17 @@ button:disabled{opacity:0.5; cursor:not-allowed;}
 </div>
 
 <script>
-const DATA_URL="https://susbolaget.emrik.org/v1/products";
-let drinks=[], filtered=[], page=1, pageSize=20;
 const favorites=new Set(JSON.parse(localStorage.getItem("favorites")||"[]"));
+let drinks=[], filtered=[], page=1, pageSize=20;
+
+// Fallback-data om API inte funkar
+const LOCAL_DATA=[
+  {id:1,name:"Absolut Vodka",type:"Spritsort",price:199,abv:40,volume:0.7},
+  {id:2,name:"Norrlands Guld",type:"Öl",price:25,abv:5,volume:0.5},
+  {id:3,name:"Coca-Cola Vodka",type:"Mix",price:49,abv:12,volume:0.5},
+  {id:4,name:"Jack Daniels",type:"Spritsort",price:299,abv:40,volume:0.7},
+  {id:5,name:"Rosévin",type:"Vin",price:89,abv:12,volume:0.75}
+];
 
 function calculateAPK(d){ return (d.abv*d.volume)/d.price; }
 function saveFavorites(){ localStorage.setItem("favorites",JSON.stringify([...favorites])); }
@@ -117,7 +123,7 @@ function createItemHTML(d){
       <span>Pris: ${d.price.toFixed(2)} kr | ABV: ${d.abv}% | Volym: ${d.volume} l | APK: ${apk.toFixed(4)}</span>
     </div>
     <div>
-      <span class="fav ${favorites.has(d.id)?'active':''}" onclick="toggleFavorite('${d.id}')">★</span>
+      <span class="fav ${favorites.has(d.id)?'active':''}" onclick="toggleFavorite(${d.id})">★</span>
       <span class="link"><a href="https://www.systembolaget.se/dryck/produkt/${d.id}" target="_blank" rel="noopener noreferrer">Systembolaget</a></span>
     </div>
   </div>`;
@@ -133,7 +139,7 @@ function renderPage(){
     div.innerHTML=createItemHTML(d);
     div.firstChild.classList.add("product-item");
     list.appendChild(div.firstChild);
-    setTimeout(()=>div.firstChild.classList.add("show"), 50); // fade-in animation
+    setTimeout(()=>div.firstChild.classList.add("show"), 50);
   });
   const totalPages=Math.max(1,Math.ceil(filtered.length/pageSize));
   document.getElementById("pageInfo").textContent=`Sida ${page} / ${totalPages} (${filtered.length} produkter)`;
@@ -174,18 +180,22 @@ function sortBy(key){
 }
 
 async function loadData(){
-  const res=await fetch(DATA_URL);
-  const data=await res.json();
-  const types=new Set();
-  drinks=data.map(d=>{
-    const price=parseFloat(d.price);
-    const abv=parseFloat(d.alcoholPercentage);
-    const volume=parseFloat(d.volume)/1000;
-    if(!price||!abv||!volume)return null;
-    const type=d.categoryLevel1||"Okänt";
-    types.add(type);
-    return {id:d.productId,name:d.productNameBold||d.productNameThin||"Okänt",type,price,abv,volume};
-  }).filter(Boolean);
+  try{
+    const res=await fetch("https://susbolaget.emrik.org/v1/products");
+    const data=await res.json();
+    drinks=data.map(d=>{
+      const price=parseFloat(d.price);
+      const abv=parseFloat(d.alcoholPercentage);
+      const volume=parseFloat(d.volume)/1000;
+      if(!price||!abv||!volume)return null;
+      const type=d.categoryLevel1||"Okänt";
+      return {id:d.productId,name:d.productNameBold||d.productNameThin||"Okänt",type,price,abv,volume};
+    }).filter(Boolean);
+  }catch(e){
+    console.warn("API gick inte, använder fallback-data");
+    drinks=[...LOCAL_DATA];
+  }
+  const types=new Set(drinks.map(d=>d.type));
   const select=document.getElementById("typeFilter");
   select.innerHTML='<option value="">Alla typer</option>';
   [...types].sort().forEach(t=>{const opt=document.createElement("option"); opt.value=t; opt.textContent=t; select.appendChild(opt);});
