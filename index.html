@@ -6,6 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Sök och jämför Systembolagets drycker efter alkohol per krona (APK). Filtrera på typ, pris, procent och spara favoriter. Enkel och mobilvänlig lista.">
 
+  <!-- Google Adsense -->
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4296884380555879"
+     crossorigin="anonymous"></script>
+
   <style>
     :root {
       --bg: #0b0f14;
@@ -60,6 +64,9 @@
     .link a{color:var(--accent);text-decoration:none;}
     .link a:hover{text-decoration:underline;}
     .pagination{margin-top:1rem;display:flex;justify-content:center;gap:.5rem;font-size:.85rem;}
+
+    /* Adsense slot styling */
+    .adsense-slot{display:block;text-align:center;margin:1rem 0;}
   </style>
 </head>
 <body>
@@ -87,6 +94,19 @@
 
   <div class="product-list" id="productList"></div>
 
+  <!-- Google Adsense placerad mellan produkter -->
+  <div class="adsense-slot">
+    <ins class="adsbygoogle"
+         style="display:block"
+         data-ad-client="ca-pub-4296884380555879"
+         data-ad-slot="1234567890"
+         data-ad-format="auto"
+         data-full-width-responsive="true"></ins>
+    <script>
+         (adsbygoogle = window.adsbygoogle || []).push({});
+    </script>
+  </div>
+
   <div class="pagination">
     <button onclick="prevPage()">⬅</button>
     <span id="pageInfo"></span>
@@ -109,7 +129,7 @@ function toggleTheme(){
 }
 
 /* ========================= DATA ========================== */
-const DATA_URL = "https://raw.githubusercontent.com/alkolist/alkolist.github.io/main/assets/products.json";
+const DATA_URL="https://susbolaget.emrik.org/v1/products";
 let drinks=[], filtered=[], page=1, pageSize=20;
 const favorites = new Set(JSON.parse(localStorage.getItem("favorites")||"[]"));
 
@@ -169,43 +189,27 @@ function nextPage(){ if(page*pageSize<filtered.length){page++;render();}}
 function prevPage(){ if(page>1){page--;render();}}
 
 async function load(){
-  try {
-    const res=await fetch("https://raw.githubusercontent.com/AlexGustafsson/systembolaget-api-data/main/assortment.json");
-    const data=await res.json();
-    const types=new Set();
-    drinks=data.map(d=>{
-      const p=parseFloat(d.price);
-      const a=parseFloat(d.alcoholPercentage);
-      const v=parseFloat(d.volume)/1000;
-      if(!p||!a||!v)return null;
-      const t=d.categoryLevel1||"Okänt";
-      types.add(t);
-      return {id:d.productId,name:d.productNameBold||d.productNameThin,type:t,price:p,abv:a,volume:v};
-    }).filter(Boolean);
-    
-    typeFilter.innerHTML='<option value="">Alla typer</option>';
-    [...types].sort().forEach(t=>{
-      const o=document.createElement("option");
-      o.value=o.textContent=t;
-      typeFilter.appendChild(o);
-    });
-    filtered=[...drinks];
-    apply();
-    console.log(`Laddade ${drinks.length} produkter från AlexGustafsson-data!`);
-  } catch(e){
-    console.error('API fel:', e);
-    // Backup: Hårdkodade produkter från din bild
-    drinks = [
-      {id:"1234",name:"Zafrika Cape",type:"Rödvin",price:49.90,abv:13.0,volume:0.75},
-      {id:"5678",name:"Bello",type:"Öl",price:59.00,abv:12.3,volume:1.35},
-      // Lägg till fler om du vill
-    ];
-    filtered=[...drinks];
-    apply();
-    console.log('Använder backup-data');
-  }
+  const res=await fetch(DATA_URL);
+  const data=await res.json();
+  const types=new Set();
+  drinks=data.map(d=>{
+    const p=parseFloat(d.price);
+    const a=parseFloat(d.alcoholPercentage);
+    const v=parseFloat(d.volume)/1000;
+    if(!p||!a||!v)return null;
+    const t=d.categoryLevel1||"Okänt";
+    types.add(t);
+    return {id:d.productId,name:d.productNameBold||d.productNameThin,type:t,price:p,abv:a,volume:v};
+  }).filter(Boolean);
+  typeFilter.innerHTML='<option value="">Alla typer</option>';
+  [...types].sort().forEach(t=>{
+    const o=document.createElement("option");
+    o.value=o.textContent=t;
+    typeFilter.appendChild(o);
+  });
+  filtered=[...drinks];
+  apply();
 }
-
 
 ["search","typeFilter","minPrice","maxPrice","minAbv","topMode"]
 .forEach(id=>document.getElementById(id).addEventListener("input",apply));
